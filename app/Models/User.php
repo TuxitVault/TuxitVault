@@ -30,6 +30,10 @@ class User extends Authenticatable
         'lastname',
         'email',
         'password',
+        'professionnal',
+        'company_name',
+        'company_siret',
+        'owner'
     ];
 
     /**
