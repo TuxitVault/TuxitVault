@@ -10,11 +10,14 @@ import TextInput from '@/Components/TextInput.vue';
 
 const form = useForm({
     firstname: '',
-    lastname:'',
+    lastname: '',
     email: '',
     password: '',
     password_confirmation: '',
     terms: false,
+    professionnal: false,
+    companyName: '',
+    companySiret: ''
 });
 
 const submit = () => {
@@ -34,7 +37,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="firstname" value="Firstname" />
+                <InputLabel for="firstname" value="Prénom" />
                 <TextInput
                     id="firstname"
                     v-model="form.firstname"
@@ -47,15 +50,14 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.firstname" />
             </div>
 
-            <div>
-                <InputLabel for="lastname" value="Lastname" />
+            <div class="mt-4">
+                <InputLabel for="lastname" value="Nom" />
                 <TextInput
                     id="lastname"
                     v-model="form.lastname"
                     type="text"
                     class="mt-1 block w-full"
                     required
-                    autofocus
                     autocomplete="lastname"
                 />
                 <InputError class="mt-2" :message="form.errors.lastname" />
@@ -75,7 +77,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Mot de passe" />
                 <TextInput
                     id="password"
                     v-model="form.password"
@@ -88,7 +90,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <InputLabel for="password_confirmation" value="Confirmer le mot de passe" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
@@ -100,13 +102,54 @@ const submit = () => {
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
+            <!-- Case à cocher "Professionnel" -->
+            <div class="mt-4">
+                <label class="flex items-center">
+                    <Checkbox id="professionnal" v-model:checked="form.professionnal" name="professionnal" />
+                    <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Je suis une entreprise</span>
+                </label>
+            </div>
+
+            <!-- Champs supplémentaires pour les professionnels -->
+            <div v-if="form.professionnal" class="mt-4">
+                <div>
+                    <InputLabel for="companyName" value="Nom de la société" />
+                    <TextInput
+                        id="companyName"
+                        v-model="form.companyName"
+                        type="text"
+                        class="mt-1 block w-full"
+                        required
+                    />
+                    <InputError class="mt-2" :message="form.errors.companyName" />
+                </div>
+
+                <div class="mt-4">
+                    <InputLabel for="companySiret" value="SIRET de la société" />
+                    <TextInput
+                        id="companySiret"
+                        v-model="form.companySiret"
+                        type="text"
+                        class="mt-1 block w-full"
+                        required
+                    />
+                    <InputError class="mt-2" :message="form.errors.companySiret" />
+                </div>
+            </div>
+
             <div v-if="$page.props.jetstream.hasTermsAndPrivacyPolicyFeature" class="mt-4">
                 <InputLabel for="terms">
                     <div class="flex items-center">
                         <Checkbox id="terms" v-model:checked="form.terms" name="terms" required />
-
                         <div class="ms-2">
-                            I agree to the <a target="_blank" :href="route('terms.show')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Terms of Service</a> and <a target="_blank" :href="route('policy.show')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Privacy Policy</a>
+                            I agree to the
+                            <a target="_blank" :href="route('terms.show')" class="underline text-sm text-gray-600 hover:text-gray-900">
+                                Terms of Service
+                            </a>
+                            and
+                            <a target="_blank" :href="route('policy.show')" class="underline text-sm text-gray-600 hover:text-gray-900">
+                                Privacy Policy
+                            </a>
                         </div>
                     </div>
                     <InputError class="mt-2" :message="form.errors.terms" />
@@ -114,12 +157,12 @@ const submit = () => {
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Already registered?
+                <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900">
+                    J'ai déjà un compte
                 </Link>
 
                 <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
+                    Enregistrer
                 </PrimaryButton>
             </div>
         </form>
