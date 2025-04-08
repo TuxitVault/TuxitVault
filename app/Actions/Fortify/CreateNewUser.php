@@ -2,7 +2,9 @@
 
 namespace App\Actions\Fortify;
 
+use App\Models\File;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\CreatesNewUsers;
@@ -30,7 +32,7 @@ class CreateNewUser implements CreatesNewUsers
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
 
-        return User::create([
+        $user = User::create([
             'firstname' => $input['firstname'],
             'lastname' => $input['lastname'],
             'email' => $input['email'],
@@ -40,5 +42,15 @@ class CreateNewUser implements CreatesNewUsers
             'password' => Hash::make($input['password']),
             'owner' => !empty($input['professionnal']) && $input['professionnal'] === true,
         ]);
+
+        Auth::login($user);
+
+        $file = new File();
+        $file->name = $user->email;
+        $file->is_folder = 1;
+        $file->makeRoot()->save();
+
+        return $user;
     }
+
 }
