@@ -22,6 +22,10 @@
             </template>
         </main>
     </div>
+
+
+    <FormProgress :form="fileUploadForm"/>
+
 </template>
 
 <script setup>
@@ -30,6 +34,18 @@ import SearchForm from "@/Components/app/SearchForm.vue";
 import UserSettingsDropdown from "@/Components/app/UserSettingsDropdown.vue";
 import {onMounted, ref} from "vue";
 import {emitter, FILE_UPLOAD_STARTED} from "@/event-bus.js";
+import {useForm, usePage} from "@inertiajs/vue3";
+import FormProgress from "@/Components/app/FormProgress.vue";
+
+
+const page = usePage();
+
+const fileUploadForm = useForm({
+    files: [],
+    relative_paths: [],
+    parent_id: null
+})
+
 
 
 const dragOver = ref(false);
@@ -37,7 +53,11 @@ const dragOver = ref(false);
 
 
 function uploadFiles(files) {
-    console.log(files);
+    fileUploadForm.parent_id = page.props.folder.id
+    fileUploadForm.files = files
+    fileUploadForm.relative_paths = [...files].map(f => f.webkitRelativePath);
+
+    fileUploadForm.post(route('file.store'))
 }
 
 
@@ -55,7 +75,6 @@ function handleDrop(ev)
 {
     dragOver.value = false;
     const files = ev.dataTransfer.files
-    console.log(files);
 
     if (!files.length) {
         return;
