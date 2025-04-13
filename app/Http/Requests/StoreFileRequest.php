@@ -31,7 +31,7 @@ class StoreFileRequest extends ParentIdBaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
      */
     public function rules(): array
     {
@@ -49,7 +49,7 @@ class StoreFileRequest extends ParentIdBaseRequest
                             ->exists();
 
                         if ($file) {
-                            $fail('File "' . $value->getClientOriginalName() . '" already exists.');
+                            $fail('Fichier "' . $value->getClientOriginalName() . '" existe déjà.');
                         }
                     }
                 }
@@ -67,7 +67,7 @@ class StoreFileRequest extends ParentIdBaseRequest
                             ->exists();
 
                         if ($file) {
-                            $fail('Folder "' . $value . '" already exists.');
+                            $fail('Dossier "' . $value . '" existe déjà.');
                         }
                     }
                 }
