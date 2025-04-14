@@ -4,8 +4,8 @@
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li v-for="ans of ancestors.data" :key="ans.id" class="inline-flex items-center">
                     <Link v-if="!ans.parent_id" :href="route('myFiles')"
-                          class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400
-                          dark:hover:text-blue">
+                          class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-500 dark:text-gray-400
+                          dark:hover:text-green">
                         <HomeIcon class="w-4 h-4"/>
                         My Files
                     </Link>
@@ -17,7 +17,7 @@
                                   clip-rule="evenodd"></path>
                         </svg>
                         <Link :href="route('myFiles', {folder: ans.path})"
-                              class="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2 dark:text-gray-400 dark:hover:text-blue">
+                              class="ml-1 text-sm font-medium text-gray-700 hover:text-green-500 md:ml-2 dark:text-gray-400 dark:hover:text-green">
                             {{ ans.name }}
                         </Link>
                     </div>
@@ -28,6 +28,9 @@
             <table class="min-w-full">
                 <thead class="bg-gray-100 border-b">
                 <tr>
+                    <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left w-[30px] max-w-[30px] pr-0">
+                        <Checkbox @change="onSelectAllChange" v-model:checked="allSelected" />
+                    </th>
                     <th class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                         Nom
                     </th>
@@ -45,7 +48,11 @@
                 <tbody>
                 <tr v-for="file of allFiles.data" :key="file.id"
                     @dblclick="openFolder(file)"
-                    class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
+                    class="border-b transition duration-300 ease-in-out hover:bg-green-100 cursor-pointer"
+                    :class="(selected[file.id] || allSelected) ? 'bg-green-50' : 'bg-white'">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 w-[30px] max-w-[30px] pr-0">
+                        <Checkbox v-model="selected[file.id]" :checked="selected[file.id] || allSelected" />
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
                         <FileIcon :file="file"/>
                         {{ file.name }}
@@ -82,12 +89,16 @@ import {router, Link} from "@inertiajs/vue3";
 import FileIcon from "@/Components/app/FileIcon.vue";
 import {onMounted, onUpdated, ref} from "vue";
 import {httpGet} from "@/Helper/http-helper.js";
+import Checkbox from "@/Components/Checkbox.vue";
 
 const props = defineProps({
     files: Object,
     folder: Object,
     ancestors: Object
 })
+
+const allSelected = ref(false);
+const selected = ref({});
 
 const loadMoreIntersect = ref(null)
 
@@ -118,6 +129,13 @@ function loadMore() {
             allFiles.value.data = [...allFiles.value.data, ...res.data]
             allFiles.value.next = res.links.next
         })
+}
+
+
+function onSelectAllChange() {
+    allFiles.value.data.forEach(f => {
+        selected.value[f.id] = allSelected.value;
+    })
 }
 
 
