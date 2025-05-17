@@ -8,15 +8,22 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Checkbox from '@/Components/Checkbox.vue';
+import { watch } from 'vue';
 
 const props = defineProps({
     user: Object,
 });
+console.log(props.user);
 
 const form = useForm({
     _method: 'PUT',
-    name: props.user.firstname,
+    firstname: props.user.firstname,
+    lastname: props.user.lastname,
     email: props.user.email,
+    professionnal: Boolean(props.user.professionnal),
+    company_name: props.user.company_name,
+    company_siret: props.user.company_siret,
     photo: null,
 });
 
@@ -25,6 +32,14 @@ const photoPreview = ref(null);
 const photoInput = ref(null);
 
 const updateProfileInformation = () => {
+    // Si professionnel est coché, company_name et company_siret doivent être remplis
+    if (form.professionnal && (!form.company_name || !form.company_siret)) {
+        // Ici, tu peux par exemple injecter une erreur manuellement dans form.errors
+        form.errors.company_name = !form.company_name ? 'Le nom de société est obligatoire.' : '';
+        form.errors.company_siret = !form.company_siret ? 'Le SIRET est obligatoire.' : '';
+        return; // Stop la soumission
+    }
+
     if (photoInput.value) {
         form.photo = photoInput.value.files[0];
     }
@@ -73,16 +88,23 @@ const clearPhotoFileInput = () => {
         photoInput.value.value = null;
     }
 };
+
+watch(() => form.professionnal, (newVal) => {
+    if (!newVal) {
+        form.company_name = '';
+        form.company_siret = '';
+    }
+});
 </script>
 
 <template>
     <FormSection @submitted="updateProfileInformation">
         <template #title>
-            Profile Information
+            Informations du profil
         </template>
 
         <template #description>
-            Update your account's profile information and email address.
+            Mettez à jour les informations de votre profil.
         </template>
 
         <template #form>
@@ -128,18 +150,32 @@ const clearPhotoFileInput = () => {
                 <InputError :message="form.errors.photo" class="mt-2" />
             </div>
 
-            <!-- Name -->
+            <!-- FirstName -->
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="firstname" value="Prénom" />
                 <TextInput
-                    id="name"
-                    v-model="form.name"
+                    id="firstname"
+                    v-model="form.firstname"
                     type="text"
                     class="mt-1 block w-full"
                     required
-                    autocomplete="name"
+                    autocomplete="firstname"
                 />
-                <InputError :message="form.errors.name" class="mt-2" />
+                <InputError :message="form.errors.firstname" class="mt-2" />
+            </div>
+
+            <!-- LastName -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="lastname" value="Nom" />
+                <TextInput
+                    id="lastname"
+                    v-model="form.lastname"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                    autocomplete="lastname"
+                />
+                <InputError :message="form.errors.lastname" class="mt-2" />
             </div>
 
             <!-- Email -->
@@ -174,6 +210,47 @@ const clearPhotoFileInput = () => {
                         A new verification link has been sent to your email address.
                     </div>
                 </div>
+            </div>
+
+            <!-- Professionnel -->
+            <div class="col-span-6 sm:col-span-4 flex items-center gap-2">
+                <InputLabel for="professionnal" value="Professionnel :" />
+                <Checkbox
+                    id="professionnal"
+                    v-model:checked="form.professionnal"
+                    class="mr-2"
+                />
+                <InputError :message="form.errors.professionnal" class="mt-2" />
+            </div>
+
+            <!-- Company Name -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="company_name" value="Société" />
+                <TextInput
+                    id="company_name"
+                    v-model="form.company_name"
+                    type="text"
+                    class="mt-1 block w-full"
+                    :disabled="!form.professionnal"
+                    :required="form.professionnal"
+                    autocomplete="company_name"
+                />
+                <InputError :message="form.errors.company_name" class="mt-2" />
+            </div>
+
+            <!-- Company SIRET -->
+            <div class="col-span-6 sm:col-span-4">
+                <InputLabel for="company_siret" value="SIRET" />
+                <TextInput
+                    id="company_siret"
+                    v-model="form.company_siret"
+                    type="text"
+                    class="mt-1 block w-full"
+                    :disabled="!form.professionnal"
+                    :required="form.professionnal"
+                    autocomplete="company_siret"
+                />
+                <InputError :message="form.errors.company_siret" class="mt-2" />
             </div>
         </template>
 
