@@ -256,11 +256,11 @@ watch(() => form.professionnal, (newVal) => {
 
         <template #actions>
             <ActionMessage :on="form.recentlySuccessful" class="me-3">
-                Saved.
+                Sauvegardé
             </ActionMessage>
 
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Save
+                Savegarder
             </PrimaryButton>
         </template>
     </FormSection>
