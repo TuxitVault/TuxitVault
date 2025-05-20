@@ -44,7 +44,13 @@ const updatePassword = () => {
         </template>
 
         <template #description>
-            Ensure your account is using a long, random password to stay secure.
+            <p>Assurez-vous que votre nouveau mot de passe respecte les règles suivantes :</p>
+            <ul class="list-disc list-inside mt-2">
+                <li>Minimum 10 caractères</li>
+                <li>Contient une majuscule et une minuscule</li>
+                <li>Contient un chiffre</li>
+                <li>Contient un caractère spécial</li>
+            </ul>
         </template>
 
         <template #form>

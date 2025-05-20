@@ -32,12 +32,10 @@ const photoPreview = ref(null);
 const photoInput = ref(null);
 
 const updateProfileInformation = () => {
-    // Si professionnel est coché, company_name et company_siret doivent être remplis
     if (form.professionnal && (!form.company_name || !form.company_siret)) {
-        // Ici, tu peux par exemple injecter une erreur manuellement dans form.errors
         form.errors.company_name = !form.company_name ? 'Le nom de société est obligatoire.' : '';
         form.errors.company_siret = !form.company_siret ? 'Le SIRET est obligatoire.' : '';
-        return; // Stop la soumission
+        return;
     }
 
     if (photoInput.value) {
@@ -104,7 +102,8 @@ watch(() => form.professionnal, (newVal) => {
         </template>
 
         <template #description>
-            Mettez à jour les informations de votre profil.
+            <p>Mettez à jour les informations de votre profil.</p>
+            <p><b>Si vous êtes un professionnel :</b> veuillez vous munir de votre numéro SIRET</p>
         </template>
 
         <template #form>
