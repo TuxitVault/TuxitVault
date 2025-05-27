@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,15 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+    Route::get('/pricing', function () {
+        return Inertia::render('Pricing');
+    })->name('pricing');
+    Route::get('checkout/{plan?}', CheckoutController::class)
+        ->middleware(['auth', 'verified'])
+        ->name('checkout');
+    Route::get('/success', function () {
+        return Inertia::render('Success');
+    })->name('success');
     Route::controller(FileController::class)->group(function () {
         Route::get('/my-files/{folder?}', 'myFiles')
             ->where('folder', '(.*)')
