@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    return Inertia::render('Auth/Login', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
@@ -28,5 +28,6 @@ Route::middleware([
             ->name('myFiles');
         Route::post('/folder/create', 'createFolder')->name('folder.create');
         Route::post('/file', 'store')->name('file.store');
+        Route::delete('/file', 'destroy')->name('file.delete');
     });
 });
