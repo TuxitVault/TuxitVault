@@ -3,9 +3,9 @@
         <nav class="h-full flex flex-col border-r shadow-sm">
             <Link :href="route('myFiles')" class="h-[80px] p-3 flex items-center gap-3">
                 <ApplicationLogo
-                    class="block h-9 w-auto fill-current text-gray-800"
+                    class="block h-14 w-auto fill-current text-gray-800"
                 />
-                TuxitVault
+                <p class="font-bold text-xl text-green-800">TuxitVault</p>
             </Link>
             <div class="px-3">
                 <CreateNewDropdown />
