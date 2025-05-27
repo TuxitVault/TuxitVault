@@ -1,7 +1,3 @@
-<script setup>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-</script>
-
 <template>
     <AuthenticatedLayout>
         <div class="max-w-4xl px-4 py-12 mx-auto">
@@ -62,6 +58,10 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
         </div>
     </AuthenticatedLayout>
 </template>
+
+<script setup>
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+</script>
 
 <style scoped>
 </style>

@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Laravel\Cashier\Http\Controllers\WebhookController;
+
+Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();

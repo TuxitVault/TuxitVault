@@ -42,7 +42,9 @@ class FileController extends Controller
 
         $folder = new FileResource($folder);
 
-        return Inertia::render('MyFiles', compact('files', 'folder', 'ancestors'));
+        $subscribed = $request->user()->subscribed();
+
+        return Inertia::render('MyFiles', compact('files', 'folder', 'ancestors', 'subscribed'));
     }
 
     public function createFolder(StoreFolderRequest $request)
