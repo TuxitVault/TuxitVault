@@ -3,7 +3,6 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
@@ -24,26 +23,16 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'professionnal' => ['boolean'],
             'company_name' => ['nullable', 'string', 'max:255'],
             'company_siret' => ['nullable', 'string', 'max:14'],
-            'photo' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ])->validateWithBag('updateProfileInformation');
 
-        if (isset($input['photo'])) {
-            $user->updateProfilePhoto($input['photo']);
-        }
-
-        if ($input['email'] !== $user->email &&
-            $user instanceof MustVerifyEmail) {
-            $this->updateVerifiedUser($user, $input);
-        } else {
-            $user->forceFill([
-                'firstname' => $input['firstname'],
-                'lastname' => $input['lastname'],
-                'email' => $input['email'],
-                'professionnal' => $input['professionnal'],
-                'company_name' => $input['company_name'],
-                'company_siret' => $input['company_siret'],
-            ])->save();
-        }
+        $user->forceFill([
+            'firstname' => $input['firstname'],
+            'lastname' => $input['lastname'],
+            'email' => $input['email'],
+            'professionnal' => $input['professionnal'],
+            'company_name' => $input['company_name'],
+            'company_siret' => $input['company_siret'],
+        ])->save();
     }
 
     /**
