@@ -13,12 +13,16 @@
                     Déposez les fichiers ici pour les télécharger
                 </template>
                 <template v-else>
-                    <div class="flex items-center justify-between w-full">
-                        <SearchForm/>
-                        <UserSettingsDropdown/>
+                    <div class="flex items-center justify-between px-4 sm:px-6 md:px-8 w-full">
+                        <div class="flex-1 flex justify-center">
+                        <SearchForm />
+                        </div>
+                        <div>
+                        <UserSettingsDropdown />
+                        </div>
                     </div>
                     <div class="flex-1 flex flex-col mx-4 sm:mx-6 md:mx-8">
-                        <slot/>
+                        <slot />
                     </div>
                 </template>
             </main>
