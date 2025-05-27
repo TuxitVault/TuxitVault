@@ -1,26 +1,29 @@
 <template>
-    <div class="h-screen bg-gray-50 flex w-full gap-4">
+    <div class="flex">
         <Navigation/>
 
-        <main @drop.prevent="handleDrop"
+        <div class="h-screen flex gap-5 justify-stretch w-screen flex-col overflow-y-auto">
+            <main @drop.prevent="handleDrop"
               @dragover.prevent="onDragOver"
               @dragleave.prevent="onDragLeave"
-              class="flex flex-col flex-1 px-4 overflow-hidden"
+              class="h-screen w-full flex justify-between flex-col"
               :class="dragOver ? 'dropzone' : ''">
 
-            <template v-if="dragOver" class="text-gray-500 text-center py-8 text-sm">
-                Déposez les fichiers ici pour les télécharger
-            </template>
-            <template v-else>
-                <div class="flex items-center justify-between w-full">
-                    <SearchForm/>
-                    <UserSettingsDropdown/>
-                </div>
-                <div class="flex-1 flex flex-col overflow-hidden">
-                    <slot/>
-                </div>
-            </template>
-        </main>
+                <template v-if="dragOver" class="text-gray-500 text-center py-8 text-sm">
+                    Déposez les fichiers ici pour les télécharger
+                </template>
+                <template v-else>
+                    <div class="flex items-center justify-between w-full">
+                        <SearchForm/>
+                        <UserSettingsDropdown/>
+                    </div>
+                    <div class="flex-1 flex flex-col mx-4 sm:mx-6 md:mx-8">
+                        <slot/>
+                    </div>
+                </template>
+            </main>
+
+        </div>
     </div>
 
     <ErrorDialog />
@@ -121,5 +124,8 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+body {
+    overflow: hidden;
 }
 </style>

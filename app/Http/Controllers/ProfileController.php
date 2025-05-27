@@ -11,7 +11,7 @@ class ProfileController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return inertia('Profile/Edit', compact('user')); // ou blade view si tu veux
+        return inertia('Profile/Edit', compact('user'));
     }
 
     public function update(Request $request)

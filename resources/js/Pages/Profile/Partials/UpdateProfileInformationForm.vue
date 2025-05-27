@@ -14,7 +14,6 @@ import { watch } from 'vue';
 const props = defineProps({
     user: Object,
 });
-console.log(props.user);
 
 const form = useForm({
     _method: 'PUT',

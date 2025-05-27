@@ -78,10 +78,6 @@
     </AuthenticatedLayout>
 </template>
 
-
-
-
-
 <script setup>
 import {HomeIcon} from "@heroicons/vue/20/solid";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
