@@ -1,5 +1,5 @@
 <template>
-    <div class="flex">
+    <div class="h-screen bg-gray-50 flex w-full gap-4">
         <Navigation/>
 
         <div class="h-screen flex gap-5 justify-stretch w-screen flex-col overflow-y-auto">
@@ -13,7 +13,7 @@
                     Déposez les fichiers ici pour les télécharger
                 </template>
                 <template v-else>
-                    <div class="flex items-center justify-between px-4 sm:px-6 md:px-8 w-full">
+                    <div class="flex items-center justify-between w-full">
                         <SearchForm />
                         <UserSettingsDropdown />
                     </div>
