@@ -29,7 +29,6 @@
                 <DeleteFileButton :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete"/>
             </div>
         </nav>
-        <pre>{{selectedIds}}</pre>
         <!--<div v-if="props.subscribed">-->
             <div class="flex-1 overflow-auto">
                 <table class="min-w-full">
