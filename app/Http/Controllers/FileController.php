@@ -110,7 +110,7 @@ class FileController extends Controller
     public function destroy(DestroyFilesRequest $request)
     {
         $data = $request->validated();
-        $parent = $request->children;
+        $parent = $request->parent;
 
         if ($data['all']) {
             $children = $parent->children;
