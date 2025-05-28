@@ -30,7 +30,7 @@
             </div>
         </nav>
         <pre>{{selectedIds}}</pre>
-        <div v-if="props.subscribed">
+        <!--<div v-if="props.subscribed">-->
             <div class="flex-1 overflow-auto">
                 <table class="min-w-full">
                     <thead class="bg-gray-100 border-b">
@@ -83,7 +83,7 @@
                 </div>
                 <div ref="loadMoreIntersect"></div>
             </div>
-        </div>
+        <!--</div>
         <div v-else class="flex flex-col items-center justify-center py-20 text-center text-gray-600">
             <h2 class="text-2xl font-semibold mb-4">Accès restreint</h2>
             <p class="mb-6 text-sm">Vous devez souscrire à un abonnement pour accéder à vos fichiers.</p>
@@ -93,7 +93,7 @@
             >
                 Voir les abonnements
             </Link>
-        </div>
+        </div>-->
     </AuthenticatedLayout>
 </template>
 
