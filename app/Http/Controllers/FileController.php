@@ -138,7 +138,7 @@ class FileController extends Controller
      */
     private function saveFile($file, $user, $parent): void
     {
-        $path = $file->store('/files/' . $user->id, 'local');
+        $path = $file->store('/files/' . $user->id, 'stockage_secure');
 
         $model = new File();
         $model->storage_path = $path;
