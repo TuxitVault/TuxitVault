@@ -8,7 +8,7 @@ use Inertia\Inertia;
 use Laravel\Cashier\Http\Controllers\WebhookController;
 
 Route::get('/', function () {
-    return Inertia::render('Auth/Login', [
+    return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
