@@ -21,7 +21,7 @@ defineProps({
 </script>
 
 <template>
-    <Head title="Welcome" />
+    <Head title="Accueil" />
 
     <div class="bg-gradient-to-b from-green-800 to-white h-screen w-full">
         <header class="h-1/3 flex flex-col px-6">
