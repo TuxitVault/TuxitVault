@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\PricingController;
+use App\Http\Controllers\SubscriptionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,9 +35,8 @@ Route::middleware([
     Route::get('/profile', function () {
         return Inertia::render('Profile/Show');
     })->name('profile');
-    Route::get('/pricing', function () {
-        return Inertia::render('Pricing');
-    })->name('pricing');
+    Route::get('/pricing', [PricingController::class, 'index'])->name('pricing');
+    Route::post('/subscription/cancel', [SubscriptionController::class, 'cancel'])->name('subscription.cancel');
     Route::get('checkout/{plan?}', CheckoutController::class)
         ->middleware(['auth', 'verified'])
         ->name('checkout');
@@ -56,5 +57,7 @@ Route::middleware([
         Route::get('/shared-with-me', 'sharedWithMe')->name('file.sharedWithMe');
         Route::get('/shared-by-me', 'sharedByMe')->name('file.sharedByMe');
         Route::get('/file/download', 'download')->name('file.download');
+        Route::get('/file/download-shared-with-me', 'downloadSharedWithMe')->name('file.downloadSharedWithMe');
+        Route::get('/file/download-shared-by-me', 'downloadSharedByMe')->name('file.downloadSharedByMe');
     });
 });
