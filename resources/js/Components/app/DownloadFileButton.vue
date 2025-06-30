@@ -10,13 +10,17 @@
 </template>
 
 <script setup>
+// Imports
 import {useForm, usePage} from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {httpGet} from "@/Helper/http-helper.js";
 
+// Uses
 const page = usePage();
 
+// Refs
 
+// Props & Emit
 const props = defineProps({
     all: {
         type: Boolean,
@@ -26,8 +30,14 @@ const props = defineProps({
     ids: {
         type: Array,
         required: false
-    }
+    },
+    sharedWithMe: false,
+    sharedByMe: false,
 })
+
+// Computed
+
+// Methods
 
 function download() {
     if (!props.all && props.ids.length === 0) {
@@ -35,18 +45,25 @@ function download() {
     }
 
     const p = new URLSearchParams();
-    p.append('parent_id', page.props.folder.id);
+    if (page.props.folder?.id) {
+        p.append('parent_id', page.props.folder?.id);
+    }
 
     if (props.all) {
         p.append('all', props.all ? 1 : 0);
-    }
-    else {
+    } else {
         for (let id of props.ids) {
-            p.append('ids[]', id);
+            p.append('ids[]', id)
         }
     }
 
-    httpGet(route('file.download')+'?'+p.toString())
+    let url = route('file.download');
+    if (props.sharedWithMe) {
+        url = route('file.downloadSharedWithMe')
+    } else if (props.sharedByMe) {
+        url = route('file.downloadSharedByMe')
+    }
+    httpGet(url + '?' + p.toString())
         .then(res => {
             console.log(res);
             if (!res.url) return;
@@ -56,7 +73,10 @@ function download() {
             a.href = res.url;
             a.click();
         })
+
 }
+
+// Hooks
 
 </script>
 

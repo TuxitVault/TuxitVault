@@ -28,6 +28,12 @@ class File extends Model
         return $this->belongsTo(File::class, 'parent_id');
     }
 
+    public function starred()
+    {
+        return $this->hasOne(StarredFile::class, 'file_id', 'id')
+            ->where('user_id', Auth::id());
+    }
+
     public function owner(): Attribute
     {
         return Attribute::make(
@@ -67,11 +73,11 @@ class File extends Model
             $model->path = ( !$model->parent->isRoot() ? $model->parent->path . '/' : '' ) . Str::slug($model->name);
         });
 
-        #static::deleted(function (File $model) {
-        #    if (!$model->is_folder) {
-        #        Storage::delete($model->storage_path);
-        #    }
-        #});
+//        static::deleted(function(File $model) {
+//            if (!$model->is_folder) {
+//                Storage::delete($model->storage_path);
+//            }
+//        });
     }
 
     public function moveToTrash()
@@ -96,5 +102,26 @@ class File extends Model
                 Storage::delete($file->storage_path);
             }
         }
+    }
+
+    public static function getSharedWithMe()
+    {
+        return File::query()
+            ->select('files.*')
+            ->join('file_shares', 'file_shares.file_id', 'files.id')
+            ->where('file_shares.user_id', Auth::id())
+            ->orderBy('file_shares.created_at', 'desc')
+            ->orderBy('files.id', 'desc');
+    }
+
+    public static function getSharedByMe()
+    {
+        return File::query()
+            ->select('files.*')
+            ->join('file_shares', 'file_shares.file_id', 'files.id')
+            ->where('files.created_by', Auth::id())
+            ->orderBy('file_shares.created_at', 'desc')
+            ->orderBy('files.id', 'desc')
+            ;
     }
 }

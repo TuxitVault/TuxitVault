@@ -53,6 +53,8 @@ Route::middleware([
         Route::post('/file/restore', 'restore')->name('file.restore');
         Route::delete('/file/delete-forever', 'deleteForever')->name('file.deleteForever');
         Route::post('/file/share', 'share')->name('file.share');
+        Route::get('/shared-with-me', 'sharedWithMe')->name('file.sharedWithMe');
+        Route::get('/shared-by-me', 'sharedByMe')->name('file.sharedByMe');
         Route::get('/file/download', 'download')->name('file.download');
     });
 });
