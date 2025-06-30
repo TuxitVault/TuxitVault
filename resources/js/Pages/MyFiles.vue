@@ -1,6 +1,7 @@
+
 <template>
     <AuthenticatedLayout>
-        <nav class="flex items-center justify-between p-1 mb-3">
+        <nav v-if="props.subscribed" class="flex items-center justify-between p-1 mb-3">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li v-for="ans of ancestors.data" :key="ans.id" class="inline-flex items-center">
                     <Link v-if="!ans.parent_id" :href="route('myFiles')"
@@ -23,7 +24,6 @@
                     </div>
                 </li>
             </ol>
-
 
             <div>
                 <ShareFilesButton :all-selected="allSelected" :selected-ids="selectedIds" />
@@ -85,15 +85,45 @@
                 <div ref="loadMoreIntersect"></div>
             </div>
         </div>
-        <div v-else class="flex flex-col items-center justify-center py-20 text-center text-gray-600">
-            <h2 class="text-2xl font-semibold mb-4">Accès restreint</h2>
-            <p class="mb-6 text-sm">Vous devez souscrire à un abonnement pour accéder à vos fichiers.</p>
-            <Link
-                :href="route('pricing')"
-                class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition duration-200 inline-block"
-            >
-                Voir les abonnements
-            </Link>
+
+        <div v-else class="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
+            <div class="mb-6 p-6 bg-gray-100 rounded-full">
+                <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+            </div>
+
+            <div class="max-w-md mx-auto">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Accès restreint</h2>
+                <p class="text-gray-600 mb-2 leading-relaxed">
+                    Pour accéder à vos fichiers et profiter de toutes les fonctionnalités,
+                    vous devez disposer d'un abonnement actif.
+                </p>
+                <p class="text-sm text-gray-500 mb-8">
+                    Choisissez le plan qui correspond le mieux à vos besoins.
+                </p>
+
+                <div class="space-y-3">
+                    <button
+                        @click="navigateToPricing"
+                        :disabled="isNavigating"
+                        class="w-full px-8 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400
+                               text-white font-semibold rounded-lg transition-all duration-200
+                               transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2
+                               focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center"
+                    >
+                        <span v-if="!isNavigating">Voir les abonnements</span>
+                        <span v-else class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Chargement...
+                        </span>
+                    </button>
+                </div>
+            </div>
         </div>
     </AuthenticatedLayout>
 </template>
@@ -103,7 +133,7 @@ import {HomeIcon} from "@heroicons/vue/20/solid";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {router, Link} from "@inertiajs/vue3";
 import FileIcon from "@/Components/app/FileIcon.vue";
-import {computed, onMounted, onUpdated, ref} from "vue";
+import {computed, onMounted, onUnmounted, onUpdated, ref} from "vue";
 import {httpGet} from "@/Helper/http-helper.js";
 import Checkbox from "@/Components/Checkbox.vue";
 import DeleteFileButton from "@/Components/app/DeleteFileButton.vue";
@@ -116,6 +146,8 @@ const props = defineProps({
     ancestors: Object,
     subscribed: Boolean
 })
+
+const isNavigating = ref(false);
 
 const selectedIds = computed(() => Object.entries(selected.value).filter(a => a[1]).map(a => a[0]))
 
@@ -136,6 +168,23 @@ function openFolder(file) {
     }
 
     router.visit(route('myFiles', {folder: file.path}))
+}
+
+function navigateToPricing() {
+    isNavigating.value = true;
+
+    router.visit(route('pricing'), {
+        method: 'get',
+        preserveState: false,
+        preserveScroll: false,
+        onFinish: () => {
+            isNavigating.value = false;
+        },
+        onError: () => {
+            isNavigating.value = false;
+            console.error('Erreur lors de la navigation vers la page des prix');
+        }
+    });
 }
 
 function loadMore() {
@@ -197,11 +246,17 @@ onUpdated(() => {
 })
 
 onMounted(() => {
-    const observer = new IntersectionObserver((entries) => entries.forEach(entry => entry.isIntersecting && loadMore()), {
-        rootMargin: '-250px 0px 0px 0px'
-    })
+    if (props.subscribed && loadMoreIntersect.value) {
+        const observer = new IntersectionObserver((entries) => entries.forEach(entry => entry.isIntersecting && loadMore()), {
+            rootMargin: '-250px 0px 0px 0px'
+        })
 
-    observer.observe(loadMoreIntersect.value)
+        observer.observe(loadMoreIntersect.value)
+
+        onUnmounted(() => {
+            observer.disconnect()
+        })
+    }
 })
 
 
