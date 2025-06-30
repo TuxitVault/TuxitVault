@@ -1,39 +1,41 @@
 <template>
-    <div class="h-screen bg-gray-50 flex w-full gap-4">
-        <Navigation/>
+  <div class="min-h-screen flex flex-col bg-gray-50">
+    <div class="flex flex-1">
+      <Navigation />
 
-        <div class="h-screen flex gap-5 justify-stretch w-screen flex-col overflow-y-auto">
-            <main @drop.prevent="handleDrop"
-              @dragover.prevent="onDragOver"
-              @dragleave.prevent="onDragLeave"
-              class="h-screen w-full flex justify-between flex-col"
-              :class="dragOver ? 'dropzone' : ''">
+      <div class="flex-1 flex flex-col overflow-y-auto gap-5">
+        <main
+          @drop.prevent="handleDrop"
+          @dragover.prevent="onDragOver"
+          @dragleave.prevent="onDragLeave"
+          :class="['flex-1 flex flex-col justify-between', dragOver ? 'dropzone' : '']"
+        >
+          <template v-if="dragOver">
+            <div class="text-gray-500 text-center py-8 text-sm">
+              Déposez les fichiers ici pour les télécharger
+            </div>
+          </template>
+          <template v-else>
+            <div class="flex items-center justify-between w-full px-4 sm:px-6 md:px-8 pt-4">
+              <SearchForm />
+              <UserSettingsDropdown />
+            </div>
 
-                <template v-if="dragOver" class="text-gray-500 text-center py-8 text-sm">
-                    Déposez les fichiers ici pour les télécharger
-                </template>
-                <template v-else>
-                    <div class="flex items-center justify-between w-full">
-                        <SearchForm />
-                        <UserSettingsDropdown />
-                    </div>
-                    <div class="flex-1 flex flex-col mx-4 sm:mx-6 md:mx-8">
-                        <slot />
-                    </div>
-                </template>
-            </main>
-
-        </div>
+            <div class="flex-1 flex flex-col px-4 sm:px-6 md:px-8">
+              <slot />
+            </div>
+          </template>
+        </main>
+      </div>
     </div>
 
+    <Footer />
+
     <ErrorDialog />
-
-
-    <FormProgress :form="fileUploadForm"/>
-
-    <Notification/>
-
+    <FormProgress :form="fileUploadForm" />
+  </div>
 </template>
+
 
 <script setup>
 import Navigation from "@/Components/app/Navigation.vue";
@@ -44,7 +46,7 @@ import {emitter, FILE_UPLOAD_STARTED, showErrorDialog, showSuccessNotification} 
 import {useForm, usePage} from "@inertiajs/vue3";
 import FormProgress from "@/Components/app/FormProgress.vue";
 import ErrorDialog from "@/Components/ErrorDialog.vue";
-import Notification from "@/Components/Notification.vue";
+import Footer from "@/Components/Footer.vue";
 
 
 const page = usePage();

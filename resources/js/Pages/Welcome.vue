@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
+import Footer from '@/Components/Footer.vue';
 
 defineProps({
     canLogin: {
@@ -60,47 +61,46 @@ defineProps({
             </div>
         </header>
 
-<main class="h-2/3 flex flex-col items-center justify-center px-4 gap-6">
-    <!-- Carte d’intro -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full text-center">
-        <p class="text-gray-700 text-lg font-medium">
-            Votre nouvel outil de sauvegarde numérique<br />
-            Inscrivez-vous et découvrez nos offres :
-        </p>
-    </div>
-
-    <!-- Cartes de tarifs côte à côte -->
-    <div class="flex flex-nowrap justify-center gap-6 mt-4 max-w-5xl w-full overflow-auto">
-        <!-- Basic Monthly -->
-        <div class="flex flex-col justify-between border border-gray-200 text-center rounded-2xl p-8 shadow-sm bg-white max-w-sm w-full">
-            <div>
-                <span class="mb-2 inline-block py-1 px-3 text-xs font-bold rounded-full invisible">
-                    Placeholder
-                </span>
-                <h4 class="font-semibold text-xl text-gray-900">Basic Monthly</h4>
-                <span class="mt-4 font-bold text-5xl text-gray-900">
-                    <span class="text-2xl align-top -ml-1">€</span>9.99
-                </span>
-                <p class="mt-2 text-sm text-gray-500">Essential features for personal use.</p>
+        <main class="h-2/3 flex flex-col items-center justify-center px-4 gap-6">
+            <!-- Carte d’intro -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full text-center">
+                <p class="text-gray-700 text-lg font-medium">
+                    Votre nouvel outil de sauvegarde numérique<br />
+                    Inscrivez-vous et découvrez nos offres :
+                </p>
             </div>
-        </div>
 
-        <div class="flex flex-col justify-between border border-gray-200 text-center rounded-2xl p-8 shadow-sm bg-white max-w-sm w-full">
-            <div>
-                <span class="mb-2 inline-block py-1 px-3 text-xs font-bold rounded-full invisible">
-                    Placeholder
-                </span>
-                <h4 class="font-semibold text-xl text-gray-900">Pro Monthly</h4>
-                <span class="mt-4 font-bold text-5xl text-gray-900">
-                    <span class="text-2xl align-top -ml-1">€</span>19.99
-                </span>
-                <p class="mt-2 text-sm text-gray-600">Advanced tools for power users.</p>
+            <!-- Cartes de tarifs -->
+            <div class="flex flex-nowrap justify-center gap-6 mt-4 max-w-5xl w-full overflow-auto">
+                <!-- Basic Monthly -->
+                <div class="flex flex-col justify-between border border-gray-200 text-center rounded-2xl p-8 shadow-sm bg-white max-w-sm w-full">
+                    <div>
+                        <span class="mb-2 inline-block py-1 px-3 text-xs font-bold rounded-full invisible">
+                            Placeholder
+                        </span>
+                        <h4 class="font-semibold text-xl text-gray-900">Basic Monthly</h4>
+                        <span class="mt-4 font-bold text-5xl text-gray-900">
+                            <span class="text-2xl align-top -ml-1">€</span>9.99
+                        </span>
+                        <p class="mt-2 text-sm text-gray-500">Essential features for personal use.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col justify-between border border-gray-200 text-center rounded-2xl p-8 shadow-sm bg-white max-w-sm w-full">
+                    <div>
+                        <span class="mb-2 inline-block py-1 px-3 text-xs font-bold rounded-full invisible">
+                            Placeholder
+                        </span>
+                        <h4 class="font-semibold text-xl text-gray-900">Pro Monthly</h4>
+                        <span class="mt-4 font-bold text-5xl text-gray-900">
+                            <span class="text-2xl align-top -ml-1">€</span>19.99
+                        </span>
+                        <p class="mt-2 text-sm text-gray-600">Advanced tools for power users.</p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
-</main>
-
-
-    </div>
+    <Footer />
 </template>
 

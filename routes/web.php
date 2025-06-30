@@ -16,6 +16,10 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/policy', function () {
+    return Inertia::render('Policy');
+})->name('policy');
+
 #Route::post('/stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('cashier.webhook');
 
 Route::middleware([
@@ -26,6 +30,9 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+    Route::get('/profile', function () {
+        return Inertia::render('Profile/Show');
+    })->name('profile');
     Route::get('/pricing', function () {
         return Inertia::render('Pricing');
     })->name('pricing');
