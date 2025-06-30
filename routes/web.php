@@ -46,9 +46,15 @@ Route::middleware([
         Route::get('/my-files/{folder?}', 'myFiles')
             ->where('folder', '(.*)')
             ->name('myFiles');
+        Route::get('/trash', 'trash')->name('trash');
         Route::post('/folder/create', 'createFolder')->name('folder.create');
         Route::post('/file', 'store')->name('file.store');
         Route::delete('/file', 'destroy')->name('file.delete');
+        Route::post('/file/restore', 'restore')->name('file.restore');
+        Route::delete('/file/delete-forever', 'deleteForever')->name('file.deleteForever');
+        Route::post('/file/share', 'share')->name('file.share');
+        Route::get('/shared-with-me', 'sharedWithMe')->name('file.sharedWithMe');
+        Route::get('/shared-by-me', 'sharedByMe')->name('file.sharedByMe');
         Route::get('/file/download', 'download')->name('file.download');
     });
 });

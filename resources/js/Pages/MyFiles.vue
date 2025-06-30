@@ -26,6 +26,7 @@
 
 
             <div>
+                <ShareFilesButton :all-selected="allSelected" :selected-ids="selectedIds" />
                 <DownloadFileButton :all="allSelected" :ids="selectedIds" class="mr-2"/>
                 <DeleteFileButton :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete"/>
             </div>
@@ -107,6 +108,7 @@ import {httpGet} from "@/Helper/http-helper.js";
 import Checkbox from "@/Components/Checkbox.vue";
 import DeleteFileButton from "@/Components/app/DeleteFileButton.vue";
 import DownloadFileButton from "@/Components/app/DownloadFileButton.vue";
+import ShareFilesButton from "@/Components/app/ShareFilesButton.vue";
 
 const props = defineProps({
     files: Object,
