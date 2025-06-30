@@ -33,6 +33,7 @@
 
     <ErrorDialog />
     <FormProgress :form="fileUploadForm" />
+    <Notification/>
   </div>
 </template>
 
@@ -47,6 +48,7 @@ import {useForm, usePage} from "@inertiajs/vue3";
 import FormProgress from "@/Components/app/FormProgress.vue";
 import ErrorDialog from "@/Components/ErrorDialog.vue";
 import Footer from "@/Components/Footer.vue";
+import Notification from "@/Components/Notification.vue";
 
 
 const page = usePage();
