@@ -13,7 +13,7 @@
                 <NavLink :href="route('myFiles')" :active="$page.url == '/my-files'">Mes fichiers</NavLink>
                 <NavLink href="/">Partagé avec moi</NavLink>
                 <NavLink href="/">Fichiers partagés par moi</NavLink>
-                <NavLink href="/">Poubelle</NavLink>
+                <NavLink :href="route('trash')" :active="$page.url == '/trash'">Poubelle</NavLink>
             </div>
         </div>
     </nav>

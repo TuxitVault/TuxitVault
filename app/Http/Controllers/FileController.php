@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FilesActionRequest;
 use App\Http\Requests\StoreFileRequest;
 use App\Http\Requests\StoreFolderRequest;
+use App\Http\Requests\TrashFilesRequest;
 use App\Http\Resources\FileResource;
 use App\Models\File;
 use Illuminate\Http\Request;
@@ -47,6 +48,30 @@ class FileController extends Controller
         $subscribed = $request->user()->subscribed();
 
         return Inertia::render('MyFiles', compact('files', 'folder', 'ancestors', 'subscribed'));
+    }
+
+    public function trash(Request $request)
+    {
+        $search = $request->get('search');
+        $query = File::onlyTrashed()
+            ->where('created_by', Auth::id())
+            ->orderBy('is_folder', 'desc')
+            ->orderBy('deleted_at', 'desc')
+            ->orderBy('files.id', 'desc');
+
+        if ($search) {
+            $query->where('name', 'like', "%$search%");
+        }
+
+        $files = $query->paginate(10);
+
+        $files = FileResource::collection($files);
+
+        if ($request->wantsJson()) {
+            return $files;
+        }
+
+        return Inertia::render('Trash', compact('files'));
     }
 
     public function createFolder(StoreFolderRequest $request)
@@ -118,12 +143,12 @@ class FileController extends Controller
             $children = $parent->children;
 
             foreach ($children as $child) {
-                $child->delete();
+                $child->moveToTrash();
             }
         } else {
             foreach ($data['ids'] ?? [] as $id) {
                 $file = File::find($id);
-                $file->delete();
+                $file->moveToTrash();
             }
         }
 
@@ -234,5 +259,43 @@ class FileController extends Controller
                 $zip->addFile(Storage::path($file->storage_path), $ancestors . $file->name);
             }
         }
+    }
+
+    public function restore(TrashFilesRequest $request)
+    {
+        $data = $request->validated();
+        if ($data['all']) {
+            $children = File::onlyTrashed()->get();
+            foreach ($children as $child) {
+                $child->restore();
+            }
+        } else {
+            $ids = $data['ids'] ?? [];
+            $children = File::onlyTrashed()->whereIn('id', $ids)->get();
+            foreach ($children as $child) {
+                $child->restore();
+            }
+        }
+
+        return to_route('trash');
+    }
+
+    public function deleteForever(TrashFilesRequest $request)
+    {
+        $data = $request->validated();
+        if ($data['all']) {
+            $children = File::onlyTrashed()->get();
+            foreach ($children as $child) {
+                $child->deleteForever();
+            }
+        } else {
+            $ids = $data['ids'] ?? [];
+            $children = File::onlyTrashed()->whereIn('id', $ids)->get();
+            foreach ($children as $child) {
+                $child->deleteForever();
+            }
+        }
+
+        return to_route('trash');
     }
 }
