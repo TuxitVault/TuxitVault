@@ -271,7 +271,7 @@
 
         <!-- Call to Action -->
         <div class="cta-section">
-            <a href="https://tuxitvault.filiere.info/" class="cta-button">
+            <a href="https://tuxitvault.filiere.info/" class="cta-button" style="color: white !important;">
                 🚀 Accéder à mes fichiers
             </a>
         </div>

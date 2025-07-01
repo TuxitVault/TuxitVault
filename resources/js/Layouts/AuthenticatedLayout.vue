@@ -52,7 +52,6 @@ import Notification from "@/Components/Notification.vue";
 
 
 const page = usePage();
-
 const fileUploadForm = useForm({
     files: [],
     relative_paths: [],
@@ -61,11 +60,29 @@ const fileUploadForm = useForm({
 
 
 
-const dragOver = ref(false);
+const dragOver = ref(false)
 
+function onDragOver() {
+    dragOver.value = true
+}
 
+function onDragLeave() {
+    dragOver.value = false
+}
+
+function handleDrop(ev) {
+    dragOver.value = false;
+    const files = ev.dataTransfer.files
+    if (!files.length) {
+        return
+    }
+
+    uploadFiles(files)
+}
 
 function uploadFiles(files) {
+    console.log(files);
+
     fileUploadForm.parent_id = page.props.folder.id
     fileUploadForm.files = files
     fileUploadForm.relative_paths = [...files].map(f => f.webkitRelativePath);
@@ -80,7 +97,7 @@ function uploadFiles(files) {
             if (Object.keys(errors).length > 0) {
                 message = errors[Object.keys(errors)[0]]
             } else {
-                message = 'Erreur lors du téléchargement du fichier. Veuillez réessayer ultérieurement.'
+                message = 'Error during file upload. Please try again later.'
             }
 
             showErrorDialog(message)
@@ -90,29 +107,6 @@ function uploadFiles(files) {
             fileUploadForm.reset();
         }
     })
-}
-
-
-function onDragOver()
-{
-    dragOver.value = true;
-}
-
-function onDragLeave()
-{
-    dragOver.value = false;
-}
-
-function handleDrop(ev)
-{
-    dragOver.value = false;
-    const files = ev.dataTransfer.files
-
-    if (!files.length) {
-        return;
-    }
-
-    uploadFiles(files);
 }
 
 

@@ -1,4 +1,3 @@
-
 <template>
     <AuthenticatedLayout>
         <nav v-if="props.subscribed" class="flex items-center justify-between p-1 mb-3">
@@ -32,7 +31,30 @@
                 <DeleteFileButton :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete"/>
             </div>
         </nav>
+
         <div v-if="props.subscribed">
+            <div v-if="searchQuery" class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <span class="text-blue-800 font-medium">
+                            Résultats de recherche pour : "{{ searchQuery }}"
+                        </span>
+                        <span class="text-blue-600 ml-2">
+                            ({{ allFiles.data.length }} résultat{{ allFiles.data.length > 1 ? 's' : '' }})
+                        </span>
+                    </div>
+                    <button
+                        @click="clearSearch"
+                        class="text-blue-600 hover:text-blue-800 underline text-sm"
+                    >
+                        Effacer la recherche
+                    </button>
+                </div>
+            </div>
+
             <div class="flex-1 overflow-auto">
                 <table class="min-w-full">
                     <thead class="bg-gray-100 border-b">
@@ -80,7 +102,21 @@
                 </table>
 
                 <div v-if="!allFiles.data.length" class="py-8 text-center text-sm text-gray-400">
-                    Il n'y a aucune donnée dans ce dossier
+                    <div v-if="searchQuery">
+                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <p class="text-lg text-gray-500 mb-2">Aucun résultat trouvé</p>
+                        <p class="text-sm text-gray-400">
+                            Essayez de modifier votre recherche ou
+                            <button @click="clearSearch" class="text-blue-600 hover:text-blue-800 underline">
+                                effacer les filtres
+                            </button>
+                        </p>
+                    </div>
+                    <div v-else>
+                        Il n'y a aucune donnée dans ce dossier
+                    </div>
                 </div>
                 <div ref="loadMoreIntersect"></div>
             </div>
@@ -163,6 +199,10 @@ const allFiles = ref({
     next: props.files.links.next
 })
 
+const searchQuery = computed(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('search') || '';
+});
 
 function openFolder(file) {
     if (!file.is_folder) {
@@ -204,19 +244,16 @@ function loadMore() {
         })
 }
 
-
 function onSelectAllChange() {
     allFiles.value.data.forEach(f => {
         selected.value[f.id] = allSelected.value;
     })
 }
 
-
 function toggleFileSelect(file) {
     selected.value[file.id] = !selected.value[file.id];
     onSelectCheckboxChange(file)
 }
-
 
 function onSelectCheckboxChange(file) {
     if (!selected.value[file.id]) {
@@ -238,6 +275,25 @@ function onSelectCheckboxChange(file) {
 function onDelete() {
     allSelected.value = false
     selected.value = {}
+}
+
+function clearSearch() {
+    const currentFolder = props.folder?.path;
+    const params = {};
+
+    if (currentFolder) {
+        router.get(route('myFiles', { folder: currentFolder }), params, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
+        });
+    } else {
+        router.get(route('myFiles'), params, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
+        });
+    }
 }
 
 onUpdated(() => {
@@ -266,9 +322,6 @@ function onVerificationComplete(data) {
 }
 
 </script>
-
-
-
 
 <style scoped>
 
