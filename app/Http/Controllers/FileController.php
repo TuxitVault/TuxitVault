@@ -26,9 +26,11 @@ class FileController extends Controller
 {
     public function myFiles(Request $request, string $folder = null)
     {
+        $search = $request->get('search');
 
         if ($folder) {
-            $folder = File::query()->where('created_by', Auth::id())
+            $folder = File::query()
+                ->where('created_by', Auth::id())
                 ->where('path', $folder)
                 ->firstOrFail();
         }
@@ -36,12 +38,29 @@ class FileController extends Controller
             $folder = $this->getRoot();
         }
 
-        $files = File::query()
-            ->where('parent_id', $folder->id)
+        $favourites = (int)$request->get('favourites');
+
+        $query = File::query()
+            ->select('files.*')
+            ->with('starred')
             ->where('created_by', Auth::id())
+            ->where('_lft', '!=', 1)
             ->orderBy('is_folder', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->orderBy('files.created_at', 'desc')
+            ->orderBy('files.id', 'desc');
+
+        if ($search) {
+            $query->where('name', 'like', "%$search%");
+        } else {
+            $query->where('parent_id', $folder->id);
+        }
+
+        if ($favourites === 1) {
+            $query->join('starred_files', 'starred_files.file_id', '=', 'files.id')
+                ->where('starred_files.user_id', Auth::id());
+        }
+
+        $files = $query->paginate(10);
 
         $files = FileResource::collection($files);
 
@@ -156,7 +175,9 @@ class FileController extends Controller
         } else {
             foreach ($data['ids'] ?? [] as $id) {
                 $file = File::find($id);
-                $file->moveToTrash();
+                if ($file) {
+                    $file->moveToTrash();
+                }
             }
         }
 
@@ -215,13 +236,13 @@ class FileController extends Controller
     public function createZip($files): string
     {
         $zipPath = 'zip/' . Str::random() . '.zip';
-        $publicPath = "public/$zipPath";
+        $publicPath = "$zipPath";
 
         if (!is_dir(dirname($publicPath))) {
-            Storage::makeDirectory(dirname($publicPath));
+            Storage::disk('public')->makeDirectory(dirname($publicPath));
         }
 
-        $zipFile = Storage::path($publicPath);
+        $zipFile = Storage::disk('public')->path($publicPath);
 
         $zip = new \ZipArchive();
 
@@ -231,7 +252,7 @@ class FileController extends Controller
 
         $zip->close();
 
-        return asset(Storage::url($zipPath));
+        return asset(Storage::disk('local')->url($zipPath));
     }
 
     private function addFilesToZip($zip, $files, $ancestors = '')
@@ -240,7 +261,15 @@ class FileController extends Controller
             if ($file->is_folder) {
                 $this->addFilesToZip($zip, $file->children, $ancestors . $file->name . '/');
             } else {
-                $zip->addFile(Storage::path($file->storage_path), $ancestors . $file->name);
+                $localPath = Storage::disk('local')->path($file->storage_path);
+                if ($file->uploaded_on_cloud == 1) {
+                    $dest = pathinfo($file->storage_path, PATHINFO_BASENAME);
+                    $content = Storage::get($file->storage_path);
+                    Storage::disk('public')->put($dest, $content);
+                    $localPath = Storage::disk('public')->path($dest);
+                }
+
+                $zip->addFile($localPath, $ancestors . $file->name);
             }
         }
     }
