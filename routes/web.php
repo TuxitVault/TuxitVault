@@ -59,5 +59,11 @@ Route::middleware([
         Route::get('/file/download', 'download')->name('file.download');
         Route::get('/file/download-shared-with-me', 'downloadSharedWithMe')->name('file.downloadSharedWithMe');
         Route::get('/file/download-shared-by-me', 'downloadSharedByMe')->name('file.downloadSharedByMe');
+
+        Route::post('/files/verify-integrity', [FileController::class, 'verifyIntegrity'])
+            ->name('files.verifyIntegrity');
+
+        Route::post('/files/generate-missing-hashes', [FileController::class, 'generateMissingHashes'])
+            ->name('files.generateMissingHashes');
     });
 });

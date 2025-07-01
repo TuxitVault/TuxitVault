@@ -13,6 +13,7 @@ use App\Models\File;
 use App\Models\FileShare;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
@@ -231,6 +232,8 @@ class FileController extends Controller
         $model->size = $file->getSize();
 
         $parent->appendNode($model);
+
+        $model->generateHash();
     }
 
     public function createZip($files): string
@@ -498,4 +501,84 @@ class FileController extends Controller
         return [$url, $filename];
     }
 
+    /**
+     * Vérifier l'intégrité des fichiers de l'utilisateur
+     */
+    public function verifyIntegrity(Request $request)
+    {
+        $user = Auth::user();
+
+        $files = File::where('created_by', $user->id)
+            ->where('is_folder', false)
+            ->whereNotNull('hash')
+            ->where('hash', '!=', '')
+            ->get();
+
+        $results = [];
+        $modifiedCount = 0;
+        $verifiedCount = 0;
+
+        foreach ($files as $file) {
+            $isIntact = $file->verifyIntegrity();
+
+            $results[] = [
+                'id' => $file->id,
+                'name' => $file->name,
+                'is_intact' => $isIntact,
+                'modified' => !$isIntact
+            ];
+
+            if ($isIntact) {
+                $verifiedCount++;
+            } else {
+                $modifiedCount++;
+            }
+        }
+
+        $summary = [
+            'total_files' => count($results),
+            'verified' => $verifiedCount,
+            'modified' => $modifiedCount
+        ];
+
+        // Retourner une redirection avec message flash pour Inertia
+        return redirect()->back()->with([
+            'verification_results' => $results,
+            'verification_summary' => $summary,
+            'verification_message' => "Vérification terminée: {$summary['total_files']} fichiers vérifiés, {$summary['verified']} intacts, {$summary['modified']} modifiés"
+        ]);
+    }
+
+    /**
+     * Générer les hash manquants pour les fichiers existants
+     */
+    public function generateMissingHashes(Request $request)
+    {
+        $user = Auth::user();
+
+        $files = File::where('created_by', $user->id)
+            ->where('is_folder', false)
+            ->where(function($query) {
+                $query->whereNull('hash')
+                    ->orWhere('hash', '');
+            })
+            ->get();
+
+        $processedCount = 0;
+        $errorCount = 0;
+
+        foreach ($files as $file) {
+            try {
+                $file->generateHash();
+                $processedCount++;
+            } catch (Exception $e) {
+                $errorCount++;
+                Log::error("Erreur génération hash pour fichier {$file->id}: " . $e->getMessage());
+            }
+        }
+
+        return redirect()->back()->with([
+            'hash_generation_message' => "Hash généré pour {$processedCount} fichiers. {$errorCount} erreurs."
+        ]);
+    }
 }

@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('files', function (Blueprint $table) {
-            $table->string('hash')->nullable();
+            if (!Schema::hasColumn('files', 'hash')) {
+                $table->string('hash', 64)->nullable();
+            }
+
+            if (!Schema::hasColumn('files', 'integrity_verified')) {
+                $table->boolean('integrity_verified')->default(false);
+            }
         });
     }
 
@@ -22,7 +28,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('files', function (Blueprint $table) {
-            $table->dropColumn('hash');
+            if (Schema::hasColumn('files', 'integrity_verified')) {
+                $table->dropColumn('integrity_verified');
+            }
+            if (Schema::hasColumn('files', 'hash')) {
+                $table->dropColumn('hash');
+            }
         });
     }
 };

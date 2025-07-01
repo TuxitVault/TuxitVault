@@ -124,4 +124,63 @@ class File extends Model
             ->orderBy('files.id', 'desc')
             ;
     }
+
+    /**
+     * Générer et enregistrer le hash SHA256 du fichier
+     */
+    public function generateHash(): void
+    {
+        if (!$this->is_folder && $this->storage_path) {
+            $filePath = Storage::disk('local')->path($this->storage_path);
+
+            if (file_exists($filePath)) {
+                $this->hash = hash_file('sha256', $filePath);
+                // Désactiver les timestamps automatiques pour éviter l'erreur updated_by
+                $this->timestamps = false;
+                $this->save();
+                $this->timestamps = true;
+            }
+        }
+    }
+
+    /**
+     * Vérifier l'intégrité du fichier
+     */
+    public function verifyIntegrity(): bool
+    {
+        if (!$this->is_folder && $this->storage_path && $this->hash) {
+            $filePath = Storage::disk('local')->path($this->storage_path);
+
+            if (file_exists($filePath)) {
+                $currentHash = hash_file('sha256', $filePath);
+                $isIntact = ($currentHash === $this->hash);
+
+                $this->integrity_verified = $isIntact;
+                $this->timestamps = false;
+                $this->save();
+                $this->timestamps = true;
+
+                return $isIntact;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Vérifier si le fichier a été modifié
+     */
+    public function isModified(): bool
+    {
+        if (!$this->is_folder && $this->storage_path && $this->hash) {
+            $filePath = Storage::disk('local')->path($this->storage_path);
+
+            if (file_exists($filePath)) {
+                $currentHash = hash_file('sha256', $filePath);
+                return ($currentHash !== $this->hash);
+            }
+        }
+
+        return false;
+    }
 }

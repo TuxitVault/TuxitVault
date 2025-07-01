@@ -32,6 +32,9 @@ class FileResource extends JsonResource
             "created_by" => $this->created_by,
             "updated_by" => $this->updated_by,
             "deleted_at" => $this->deleted_at,
+            'has_hash' => !empty($this->hash),
+            'integrity_verified' => $this->integrity_verified,
+            'is_modified' => $this->is_folder ? false : (!empty($this->hash) ? $this->isModified() : false),
         ];
     }
 }

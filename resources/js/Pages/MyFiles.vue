@@ -6,7 +6,7 @@
                 <li v-for="ans of ancestors.data" :key="ans.id" class="inline-flex items-center">
                     <Link v-if="!ans.parent_id" :href="route('myFiles')"
                           class="sticky top-0 inline-flex items-center text-sm font-medium text-gray-700 hover:text-green-500 dark:text-gray-400
-                          dark:hover:text-green">
+                  dark:hover:text-green">
                         <HomeIcon class="w-4 h-4"/>
                         My Files
                     </Link>
@@ -25,9 +25,10 @@
                 </li>
             </ol>
 
-            <div>
+            <div class="flex items-center space-x-2">
+                <VerifyIntegrityButton @verification-complete="onVerificationComplete" />
                 <ShareFilesButton :all-selected="allSelected" :selected-ids="selectedIds" />
-                <DownloadFileButton :all="allSelected" :ids="selectedIds" class="mr-2"/>
+                <DownloadFileButton :all="allSelected" :ids="selectedIds" />
                 <DeleteFileButton :delete-all="allSelected" :delete-ids="selectedIds" @delete="onDelete"/>
             </div>
         </nav>
@@ -63,8 +64,7 @@
                             <Checkbox @change="$event => onSelectCheckboxChange(file)" v-model="selected[file.id]" :checked="selected[file.id] || allSelected" />
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 flex items-center">
-                            <FileIcon :file="file"/>
-                            {{ file.name }}
+                            <IntegrityIndicator :file="file" />
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                             {{ file.owner }}
@@ -133,12 +133,14 @@ import {HomeIcon} from "@heroicons/vue/20/solid";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {router, Link} from "@inertiajs/vue3";
 import FileIcon from "@/Components/app/FileIcon.vue";
-import {computed, onMounted, onUnmounted, onUpdated, ref} from "vue";
+import { computed, onMounted, onUnmounted, onUpdated, ref } from "vue";
 import {httpGet} from "@/Helper/http-helper.js";
 import Checkbox from "@/Components/Checkbox.vue";
 import DeleteFileButton from "@/Components/app/DeleteFileButton.vue";
 import DownloadFileButton from "@/Components/app/DownloadFileButton.vue";
 import ShareFilesButton from "@/Components/app/ShareFilesButton.vue";
+import IntegrityIndicator from "@/Components/app/IntegrityIndicator.vue";
+import VerifyIntegrityButton from "@/Components/app/VerifyIntegrityButton.vue";
 
 const props = defineProps({
     files: Object,
@@ -259,6 +261,9 @@ onMounted(() => {
     }
 })
 
+function onVerificationComplete(data) {
+    console.log('Vérification terminée:', data);
+}
 
 </script>
 

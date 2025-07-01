@@ -271,7 +271,7 @@
 
         <!-- Call to Action -->
         <div class="cta-section">
-            <a href="{{ config('app.url') }}" class="cta-button">
+            <a href="https://tuxitvault.filiere.info/" class="cta-button">
                 🚀 Accéder à mes fichiers
             </a>
         </div>
@@ -288,7 +288,7 @@
             Cet email a été envoyé automatiquement. Si vous n'attendiez pas ce message, vous pouvez l'ignorer en toute sécurité.
         </p>
         <p style="margin-top: 15px;">
-            <a href="{{ config('app.url') }}">Visiter TuxitVault</a> •
+            <a href="https://tuxitvault.filiere.info/">Visiter TuxitVault</a> •
             <a href="mailto:support@tuxitvault.fr">Support</a>
         </p>
     </div>
