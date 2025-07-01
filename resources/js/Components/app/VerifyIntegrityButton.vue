@@ -23,6 +23,7 @@
 <script setup>
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
+import {showErrorNotification, showSuccessNotification} from "@/event-bus.js";
 
 const emit = defineEmits(['verification-complete'])
 
@@ -36,20 +37,24 @@ const verifyIntegrity = async () => {
         preserveScroll: true,
         onSuccess: (page) => {
             const message = page.props.flash?.verification_message
+            const summary = page.props.flash?.verification_summary
 
             if (message) {
-                alert(message)
+                showSuccessNotification(message)
+            } else if (summary) {
+                showSuccessNotification(`Vérification terminée: ${summary.total_files} fichiers vérifiés, ${summary.verified} intacts, ${summary.modified} modifiés`)
             } else {
-                alert('Vérification d\'intégrité terminée avec succès!')
+                showSuccessNotification('Vérification d\'intégrité terminée avec succès!')
             }
 
+            // Rafraîchir la liste des fichiers
             router.reload({ only: ['files'] })
 
             emit('verification-complete', page.props.flash)
         },
         onError: (errors) => {
             console.error('Erreurs:', errors)
-            alert('Erreur lors de la vérification de l\'intégrité')
+            showErrorNotification('Erreur lors de la vérification de l\'intégrité')
         },
         onFinish: () => {
             loading.value = false
