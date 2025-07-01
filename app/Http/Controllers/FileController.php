@@ -120,6 +120,13 @@ class FileController extends Controller
 
     public function store(StoreFileRequest $request)
     {
+
+        if (!$request->user()->subscribed()) {
+            return response()->json([
+                'subscription_required' => true
+            ], 403);
+        }
+
         $data = $request->validated();
         $parent = $request->parent;
         $user = $request->user();
