@@ -183,4 +183,51 @@ class File extends Model
 
         return false;
     }
+
+    /**
+     * Calculer l'espace de stockage utilisé par un utilisateur
+     */
+    public static function calculateUserStorageUsage($userId): int
+    {
+        return self::where('created_by', $userId)
+            ->where('is_folder', false)
+            ->whereNull('deleted_at')
+            ->sum('size') ?? 0;
+    }
+
+    /**
+     * Obtenir les statistiques de stockage pour un utilisateur
+     */
+    public static function getStorageStats($userId): array
+    {
+        $totalFiles = self::where('created_by', $userId)
+            ->where('is_folder', false)
+            ->whereNull('deleted_at')
+            ->count();
+
+        $totalFolders = self::where('created_by', $userId)
+            ->where('is_folder', true)
+            ->whereNull('deleted_at')
+            ->count();
+
+        $usedSpace = self::calculateUserStorageUsage($userId);
+
+        $trashedFiles = self::onlyTrashed()
+            ->where('created_by', $userId)
+            ->where('is_folder', false)
+            ->count();
+
+        $trashedSpace = self::onlyTrashed()
+            ->where('created_by', $userId)
+            ->where('is_folder', false)
+            ->sum('size') ?? 0;
+
+        return [
+            'total_files' => $totalFiles,
+            'total_folders' => $totalFolders,
+            'used_space' => $usedSpace,
+            'trashed_files' => $trashedFiles,
+            'trashed_space' => $trashedSpace,
+        ];
+    }
 }

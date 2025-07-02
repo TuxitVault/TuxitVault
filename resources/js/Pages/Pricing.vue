@@ -40,6 +40,53 @@
                             </div>
                         </div>
 
+                        <!-- Barre de stockage -->
+                        <div v-if="storageInfo" class="mb-6 p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-sm font-medium text-gray-700">Stockage utilisé</h3>
+                                <span class="text-sm text-gray-600">
+                                    {{ storageInfo.used_formatted }} / {{ storageInfo.limit_formatted }}
+                                </span>
+                            </div>
+
+                            <!-- Barre de progression -->
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                                <div
+                                    class="h-2.5 rounded-full transition-all duration-300"
+                                    :class="getStorageBarColor(storageInfo.usage_percentage)"
+                                    :style="{ width: storageInfo.usage_percentage + '%' }"
+                                ></div>
+                            </div>
+
+                            <div class="flex items-center justify-between text-xs text-gray-500">
+                                <span>{{ storageInfo.usage_percentage }}% utilisé</span>
+                                <span v-if="storageInfo.remaining > 0">
+                                    {{ storageInfo.remaining_formatted }} restant
+                                </span>
+                                <span v-else class="text-red-600 font-medium">
+                                    Limite atteinte
+                                </span>
+                            </div>
+
+                            <!-- Alerte si proche de la limite -->
+                            <div v-if="storageInfo.usage_percentage >= 90" class="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="text-sm text-orange-800">
+                                        <span v-if="storageInfo.usage_percentage >= 100" class="font-medium">
+                                            Espace de stockage épuisé !
+                                        </span>
+                                        <span v-else class="font-medium">
+                                            Attention : vous approchez de la limite de stockage.
+                                        </span>
+                                        Pensez à passer à un plan supérieur.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             <div class="text-center p-3 bg-gray-50 rounded-lg">
                                 <p class="text-sm text-gray-600">Prochaine facturation</p>
@@ -274,6 +321,10 @@ const props = defineProps({
     subscription: {
         type: Object,
         default: null
+    },
+    storageInfo: {
+        type: Object,
+        default: null
     }
 });
 
@@ -317,5 +368,13 @@ const cancelSubscription = async () => {
         console.error('Erreur:', error);
         cancelLoading.value = false;
     }
+};
+
+// Fonction pour déterminer la couleur de la barre de progression
+const getStorageBarColor = (percentage) => {
+    if (percentage >= 100) return 'bg-red-500';
+    if (percentage >= 90) return 'bg-orange-500';
+    if (percentage >= 75) return 'bg-yellow-500';
+    return 'bg-green-500';
 };
 </script>
